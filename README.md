@@ -11,11 +11,12 @@ It's inspired by the OG MS Paint as seen on Windows XP.
 - ⚡️ Blazing fast renders @ 60-120 FPS
 - 🌐 WebAssembly support (WIP)
 
+## Usage
 
-## Usage 
+The program can be compiled and ran with the below command:
 
 ```
-
+make build
 ```
 
 ## Examples
@@ -23,7 +24,6 @@ It's inspired by the OG MS Paint as seen on Windows XP.
 Here's a cool illustration made with Drawww:
 
 ![Draw illustration](./images/illustration.png)
-
 
 ## License
 
