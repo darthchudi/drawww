@@ -4,7 +4,7 @@
 
 Drawww is a drawing library and program built with OpenGL. It provides a minimal canvas for drawing with a mouse.
 
-It's inspired by the OG MS Paint as seen on Windows XP.
+It's inspired by the OG [MS Paint](https://en.wikipedia.org/wiki/Microsoft_Paint) as seen on Windows XP.
 
 ## Features
 
@@ -19,12 +19,12 @@ The program can be compiled and ran with the below command:
 make build
 ```
 
+## License
+
+Drawww is provided under the MIT license. See the LICENSE file for details.
+
 ## Examples
 
 Here's a cool illustration made with Drawww:
 
 ![Draw illustration](./images/illustration.png)
-
-## License
-
-Drawww is provided under the MIT license. See the LICENSE file for details.
