@@ -8,7 +8,7 @@ set(GLFW_INSTALL OFF CACHE BOOL "GLFW lib only")
 add_subdirectory(vendor/glfw)
 
 # GLAD setup
-set(GLAD_SOURCES "src/gl.c")
+set(GLAD_SOURCES "src/gl.cpp")
 
 # Source files
 set(APP_SRC main.cpp)
