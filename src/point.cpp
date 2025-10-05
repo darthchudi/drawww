@@ -4,8 +4,14 @@
 
 // Initialise the mouse click shader program
 Point::Point(float x, float y)
+#ifdef __EMSCRIPTEN__
+    : shader("/shaders/point/point_webgl2.vert",
+             "/shaders/point/point_webgl2.frag")
+#else
     : shader("../src/shaders/point/point.vert",
-             "../src/shaders/point/point.frag") {
+             "../src/shaders/point/point.frag")
+#endif
+{
   // Setup the vertex buffers
   glGenVertexArrays(1, &(this->VAO));
   glGenBuffers(1, &(this->VBO));
