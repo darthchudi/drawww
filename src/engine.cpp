@@ -22,6 +22,48 @@
 const char *RENDER_CONTEXT_WEB = "web";
 const char *RENDER_CONTEXT_NATIVE = "native";
 
+// TODO: these could be defined in a separate file
+#ifdef __EMSCRIPTEN__
+/**
+ * applyEmscriptenCanvasResize resizes the following items:
+ * 1. It stretches the HTML canvas item so that it stretches the full dimensions of its container.
+ * 2. It updates the GLFW window size, which implicitly updates the GLFW framebuffer size, so that it uses the new
+ * canvas size.
+ * 3. Finally, we update the viewport with the new updated framebuffer size.
+ * @param window The GLFW window
+ */
+void applyEmscriptenCanvasResize(GLFWwindow * window) {
+  // 1. Get canvas container size in CSS pixels and set HTML canvas element size to span its
+  // container element dimensions in CSS pixels
+  double canvasContainerWidth, canvasContainerHeight;
+
+  emscripten_get_element_css_size("#canvas-container", &canvasContainerWidth, &canvasContainerHeight);
+  emscripten_set_canvas_element_size("canvas", int(canvasContainerWidth), int(canvasContainerHeight));
+
+  // 2. Set the GLFW window size based on the updated canvas pixel size
+  // This will cause the frame buffer size to be recalculated.
+  glfwSetWindowSize(window, int(canvasContainerWidth), int(canvasContainerHeight));
+
+  // 3. Finally update the viewport with the updated frame buffer size
+  int frameBufferWidth, frameBufferHeight;
+  glfwGetFramebufferSize(window, &frameBufferWidth, &frameBufferHeight);
+
+  glViewport(0, 0, frameBufferWidth, frameBufferHeight);
+}
+
+/**
+ * emscriptenResizeCallback handles the HTML window being resized
+ */
+bool emscriptenResizeCallback(int eventType, const EmscriptenUiEvent *uiEvent, void *userData) {
+  GLFWwindow *window = reinterpret_cast<GLFWwindow *>(userData);
+  if (!window) return false;
+
+  applyEmscriptenCanvasResize(window);
+
+  return true;
+}
+#endif
+
 // Initialises the engine
 Engine::Engine(int width, int height, const char *title) {
   this->setRenderContext();
@@ -63,59 +105,6 @@ void Engine::createWindow(int width, int height, const char *title) {
 
   glfwMakeContextCurrent(this->window);
 }
-
-#ifdef __EMSCRIPTEN__
-/**
- * applyEmscriptenCanvasResize resizes the following items:
- * 1. It stretches the HTML canvas item so that it stretches the full dimensions of its container.
- * 2. It updates the GLFW window size, which implicitly updates the GLFW framebuffer size, so that it uses the new
- * canvas size.
- * 3. Finally, we update the viewport with the new updated framebuffer size.
- * @param window The GLFW window
- */
-void applyEmscriptenCanvasResize(GLFWwindow * window) {
-  // 1. Get canvas container size in CSS pixels
-  double canvasContainerWidth, canvasContainerHeight;
-  emscripten_get_element_css_size("#canvas-container", &canvasContainerWidth, &canvasContainerHeight);
-  // printf("Canvas container element size: %f %f\n", canvasContainerWidth, canvasContainerHeight);
-
-  // Set HTML canvas element size to span its container element dimensions in CSS pixels
-  emscripten_set_canvas_element_size("canvas", int(canvasContainerWidth), int(canvasContainerHeight));
-
-  // Set the GLFW window size based on the updated canvas pixel size
-  // This will cause the frame buffer size to be recalculated.
-  glfwSetWindowSize(window, int(canvasContainerWidth), int(canvasContainerHeight));
-
-  // Check that the window size was set correctly
-  int glfWWindowWidth, glfWWindowHeight;
-  glfwGetWindowSize(window, &glfWWindowWidth, &glfWWindowHeight);
-  // printf("Window size after: %i %i \n", glfWWindowWidth, glfWWindowHeight);
-
-  int frameBufferWidth, frameBufferHeight;
-  glfwGetFramebufferSize(window, &frameBufferWidth, &frameBufferHeight);
-  // printf("Frame buffer size after: %i %i \n", frameBufferWidth, frameBufferHeight);
-
-  // Finally update the viewport with the updated frame buffer size
-  glViewport(0, 0, frameBufferWidth, frameBufferHeight);
-}
-
-/**
- * emscriptenResizeCallback handles the HTML window being resized
- * @param eventType
- * @param uiEvent
- * @param userData
- * @return
- */
-bool emscriptenResizeCallback(int eventType, const EmscriptenUiEvent *uiEvent, void *userData) {
-  GLFWwindow *window = reinterpret_cast<GLFWwindow *>(userData);
-  if (!window) return false;
-
-  applyEmscriptenCanvasResize(window);
-
-  return true;
-}
-
-#endif
 
 // initOpenGL intialises OpenGL
 void Engine::initOpenGL() {

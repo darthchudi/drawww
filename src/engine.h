@@ -33,6 +33,7 @@ public:
   void setRenderContext();
 
 private:
+  // context describes the render context of the engine e.g web or native
   const char * context;
 
   /**
