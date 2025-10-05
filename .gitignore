@@ -7,3 +7,4 @@ build
 assets
 cmake-build-debug
 build-wasm
+deployments/
