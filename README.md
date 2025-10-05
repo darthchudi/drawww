@@ -2,7 +2,7 @@
 
 ![Drawww logo](./images/logo.png)
 
-Drawww (https://drawww.net/) is a drawing library and program built with OpenGL. It provides a minimal canvas for drawing with a mouse.
+Drawww (https://drawww.net) is a drawing library and program built with OpenGL. It provides a minimal canvas for drawing with a mouse.
 
 It's inspired by the OG [MS Paint](https://en.wikipedia.org/wiki/Microsoft_Paint) as seen on Windows XP.
 
