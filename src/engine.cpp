@@ -276,13 +276,16 @@ void Engine::recordMetrics() {
   double framesPerSecond = double(this->numFrames) / elapsedTime;
   int fps = int(std::floor(framesPerSecond));
 
-  // Build the window title containing the metrics
+  // Build the window title containing the metrics.
+  // We only update the window title with this information on non-web platforms
   std::stringstream windowTitle;
   windowTitle.setf(std::ios::fixed);
   windowTitle << this->title << " @ " << fps << " FPS — "
               << std::setprecision(3) << milliSecondsPerFrame << "ms/frame";
 
+#ifndef  __EMSCRIPTEN__
   glfwSetWindowTitle(window, windowTitle.str().c_str());
+#endif
 
   // Print metrics to stdout
   // printf("%i FPS - %.3f ms/frame\n", fps, milliSecondsPerFrame);
