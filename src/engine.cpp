@@ -69,6 +69,7 @@ Engine::Engine(int width, int height, const char *title) {
   this->setRenderContext();
   this->createWindow(width, height, title);
   this->initOpenGL();
+  this->registerCallbacks();
 }
 
 // Destructor to clean up heap-allocated objects
@@ -82,6 +83,92 @@ void Engine::setRenderContext() {
 #endif
 }
 
+void Engine::setDrawing(bool isDrawing) {
+  this->_isDrawing = isDrawing;
+
+  if (!isDrawing) {
+    this->hasLastPoint = false;
+  } else {
+    printf("SET DRAWING!!!!\n");
+  }
+}
+
+bool Engine::isDrawing() {
+  return this->_isDrawing;
+}
+
+void engineMouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
+  auto engine = reinterpret_cast<Engine *>(glfwGetWindowUserPointer(window));
+
+  switch (action){
+    case GLFW_PRESS:
+      engine->setDrawing(true);
+      break;
+    case GLFW_RELEASE:
+      engine->setDrawing(false);
+      break;
+  }
+
+  printf("Is drawing: %s \n", engine->isDrawing() ? "true":"false");
+}
+
+void engineCursorPositionCallback(GLFWwindow* window, double xpos, double ypos) {
+  auto engine = reinterpret_cast<Engine *>(glfwGetWindowUserPointer(window));
+
+  if (!engine->isDrawing()) {
+    return;
+  };
+
+  glm::vec2 mousePositionNDC = getMousePositionNDC(window);
+
+  // printf("Drawing at Window position: %f %f. NDC: %f %f\n", xpos, ypos, mousePositionNDC.x, mousePositionNDC.y);
+
+  if (!engine->hasLastPoint) {
+    engine->lastPoint = glm::vec2{mousePositionNDC.x, mousePositionNDC.y};
+    engine->hasLastPoint = true;
+
+    // Return early as there's nothing to do
+    return;
+  }
+
+  // Compute the distance between the current position and the last point
+  auto dx = mousePositionNDC.x - engine->lastPoint.x;
+  auto dy = mousePositionNDC.y - engine->lastPoint.y;
+
+  auto distance = std::sqrt(dx * dx + dy * dy);
+
+  printf("Distanceee: x=%f y=%f distance=%f\n", dx, dy, distance);
+
+  if (distance <= 0) {
+    // Nothing to interpolate
+    return;
+  }
+
+  float seperator = 1;
+
+  int steps = std::ceil(distance / seperator);
+
+  for (int i = 1; i <= steps; i++) {
+  double t = double(i) / double(steps);
+
+    auto new_x = engine->lastPoint.x + (dx * t);
+    auto new_y = engine->lastPoint.y + (dy * t);
+
+    // Add a new point at this position
+    std::unique_ptr<Point> point(new Point(new_x, new_y));
+
+    engine->add(std::move(point));
+  }
+
+  // Set this position as the last
+  engine->lastPoint = glm::vec2{mousePositionNDC.x, mousePositionNDC.y};
+}
+
+void Engine::registerCallbacks() {
+  glfwSetMouseButtonCallback(window, engineMouseButtonCallback);
+  glfwSetCursorPosCallback(window, engineCursorPositionCallback);
+}
+
 // createWindow creates a window for the engine
 void Engine::createWindow(int width, int height, const char *title) {
   // Setup the GLFW library
@@ -92,17 +179,23 @@ void Engine::createWindow(int width, int height, const char *title) {
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
   // Create the GLFW window
-  GLFWwindow *_window = glfwCreateWindow(width, height, title, NULL, NULL);
-  if (_window == NULL) {
+  GLFWwindow *_window = glfwCreateWindow(width, height, title, nullptr, nullptr);
+  if (_window == nullptr) {
     std::cout << "Failed to create GLFW window" << std::endl;
     glfwTerminate();
 
     throw std::runtime_error("failed to create window");
   }
 
+  // Store a reference to the window in the engine instance
   this->window = _window;
   this->title = title;
 
+  // Set a reference to the drawww engine instance in GLFW.
+  // This allows us to reference the engine instance later on in callbacks
+  glfwSetWindowUserPointer(_window, this);
+
+  // Make the created window the GLFW current context
   glfwMakeContextCurrent(this->window);
 }
 
@@ -119,8 +212,6 @@ void Engine::initOpenGL() {
   int frameBufferWidth, frameBufferHeight;
   glfwGetFramebufferSize(this->window, &frameBufferWidth, &frameBufferHeight);
   glViewport(0, 0, frameBufferWidth, frameBufferHeight);
-
-  // printf("Frame buffer size at startup: %i %i \n", frameBufferWidth, frameBufferHeight);
 
   // Register GLFW callback on native platforms
   glfwSetFramebufferSizeCallback(this->window, glfwFramebufferSizeCallback);
@@ -218,17 +309,17 @@ int Engine::processKeyboardInput() {
 // processMouseInput processes mouse input from the window on each render loop
 void Engine::processMouseInput() {
   // Add a new point if the mouse is currently pressed
-  int leftMouseButtonState =
-      glfwGetMouseButton(this->window, GLFW_MOUSE_BUTTON_LEFT);
-  if (leftMouseButtonState != GLFW_PRESS)
-    return;
-
-  glm::vec2 mousePositionNDC = getMousePositionNDC(this->window);
-
-  std::unique_ptr<Point> point(
-      new Point(mousePositionNDC.x, mousePositionNDC.y));
-
-  this->add(std::move(point));
+  // int leftMouseButtonState =
+  //     glfwGetMouseButton(this->window, GLFW_MOUSE_BUTTON_LEFT);
+  // if (leftMouseButtonState != GLFW_PRESS)
+  //   return;
+  //
+  // glm::vec2 mousePositionNDC = getMousePositionNDC(this->window);
+  //
+  // std::unique_ptr<Point> point(
+  //     new Point(mousePositionNDC.x, mousePositionNDC.y));
+  //
+  // this->add(std::move(point));
 }
 
 // clearScreen clears the screen

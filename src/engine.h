@@ -32,7 +32,26 @@ public:
   // This could either be web or native
   void setRenderContext();
 
+  // registerCallbacks registers a set of callbacks
+  void registerCallbacks();
+
+  void setDrawing(bool isDrawing);
+
+  bool isDrawing();
+
+  // Indicates the last drawn point
+  glm::vec2 lastPoint;
+  bool hasLastPoint;
+
 private:
+  // This allows us enable debug logs
+  bool debugMode;
+
+  // Indicates if we are currently drawing
+  bool _isDrawing;
+
+
+
   // context describes the render context of the engine e.g web or native
   const char * context;
 
