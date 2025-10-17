@@ -7,3 +7,7 @@
 // getMousePositionNDC returns the mouse position within the window
 // in normalised device coordinates (NDC) With values in the range [-1, 1].
 glm::vec2 getMousePositionNDC(GLFWwindow *window);
+
+glm::vec2 getMousePositionFrameBuffer(GLFWwindow *window);
+
+glm::vec2 frameBufferPosToNDC(glm::vec2 input);

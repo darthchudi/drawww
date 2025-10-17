@@ -10,101 +10,101 @@
 // state of the main loop and the app window
 class Engine {
 public:
-  // Initialises the engine
-  Engine(int width, int height, const char *title);
+    // Initialises the engine
+    Engine(int width, int height, const char *title);
 
-  // Destructor to clean up heap-allocated objects
-  ~Engine();
+    // Destructor to clean up heap-allocated objects
+    ~Engine();
 
-  // add adds a drawable item to the engine's scene graph
-  void add(std::unique_ptr<Drawable> node);
+    // add adds a drawable item to the engine's scene graph
+    void add(std::unique_ptr<Drawable> node);
 
-  // run runs the engine render loop
-  void run();
+    // run runs the engine render loop
+    void run();
 
-  // tick is a single render pass used to draw on the screen.
-  void tick();
+    // tick is a single render pass used to draw on the screen.
+    void tick();
 
-  // Terminates the engine and window
-  void terminate();
+    // Terminates the engine and window
+    void terminate();
 
-  // setRenderContext sets the context in which the engine is running in.
-  // This could either be web or native
-  void setRenderContext();
+    // setRenderContext sets the context in which the engine is running in.
+    // This could either be web or native
+    void setRenderContext();
 
-  // registerCallbacks registers a set of callbacks
-  void registerCallbacks();
+    // registerCallbacks registers a set of window callbacks
+    void registerCallbacks();
 
-  void setDrawing(bool isDrawing);
+    // setDrawing sets the drawing state of the engine
+    void setDrawing(bool isDrawing);
 
-  bool isDrawing();
+    // isDrawing indicates whether we are currently drawing i.e is the mouse pressed.
+    bool isDrawing();
 
-  // Indicates the last drawn point
-  glm::vec2 lastPoint;
-  bool hasLastPoint;
+    // addPointAtMousePosition adds a point at the current mouse position
+    void addPointAtMousePosition();
+
+    // Indicates the last drawn point
+    glm::vec2 lastPoint;
+    bool hasLastPoint;
+
+    // This allows us enable debug logs
+    bool debugMode;
 
 private:
-  // This allows us enable debug logs
-  bool debugMode;
+    // Indicates if we are currently drawing
+    bool _isDrawing;
 
-  // Indicates if we are currently drawing
-  bool _isDrawing;
+    // context describes the render context of the engine e.g web or native
+    const char *context;
 
+    /**
+      Observability-related fields
+    */
+    double lastCheckpointTime;
+    int numFrames;
 
+    /**
+      Engine metadata
+     */
+    const char *title;
 
-  // context describes the render context of the engine e.g web or native
-  const char * context;
+    /**
+      Core engine fields and methods
+    */
+    // The window used by the engine
+    GLFWwindow *window;
 
-  /**
-    Observability-related fields
-  */
-  double lastCheckpointTime;
-  int numFrames;
+    // The nodes which will be rendered in the sceene
+    std::vector<std::unique_ptr<Drawable> > nodes;
 
-  /**
-    Engine metadata
-   */
-  const char *title;
+    // createWindow creates a window for the engine
+    void createWindow(int width, int height, const char *title);
 
-  /**
-    Core engine fields and methods
-  */
-  // The window used by the engine
-  GLFWwindow *window;
+    // initOpenGL intiialises OpenGL
+    void initOpenGL();
 
-  // The nodes which will be rendered in the sceene
-  std::vector<std::unique_ptr<Drawable>> nodes;
+    // isRunning indicates if the engine is running
+    bool isRunning();
 
-  // createWindow creates a window for the engine
-  void createWindow(int width, int height, const char *title);
+    // processInput processes input from the window on each render loop
+    void processInput();
 
-  // initOpenGL intiialises OpenGL
-  void initOpenGL();
+    // processKeyboardInput processes keyboard input from the window on each
+    // render loop
+    int processKeyboardInput();
 
-  // isRunning indicates if the engine is running
-  bool isRunning();
+    // clearScreen clears the screen
+    void clearScreen();
 
-  // processInput processes input from the window on each render loop
-  void processInput();
+    // render renders the nodes in the engine's scene graph
+    void render();
 
-  // processKeyboardInput processes keyboard input from the window on each
-  // render loop
-  int processKeyboardInput();
+    // recordMetrics records metrics on each iteration of the render loop.
+    void recordMetrics();
 
-  // processMouseInput processes mouse input from the window on each render loop
-  void processMouseInput();
-
-  // clearScreen clears the screen
-  void clearScreen();
-
-  // render renders the nodes in the engine's scene graph
-  void render();
-
-  // recordMetrics records metrics on each iteration of the render loop.
-  void recordMetrics();
-
-  // runNative runs the render loop on a native platform.
-  void runNative();
+    // runNative runs the render loop on a native platform.
+    void runNative();
 };
 
 /**
@@ -119,11 +119,3 @@ void glfwFramebufferSizeCallback(GLFWwindow *window, int width, int height);
 // The function is called per frame by the browser and yields back control after
 // a single render pass.
 static void runWeb(void *userData);
-
-struct FrameAnalytics {
-private:
-  static glm::vec2 windowSize;
-  static double dpi;
-  static glm::vec2 frameBufferSize;
-  static glm::vec2 viewportSize;
-};
