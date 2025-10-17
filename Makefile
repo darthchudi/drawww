@@ -4,6 +4,10 @@ build:
 	@mkdir -p build 
 	@cd build && cmake .. && make all && ./drawww
 
+.PHONY: clean
+clean:
+	@rm -rf build
+
 # Debugs runtime errors using the lldb debugger
 .PHONY: debug
 debug:
