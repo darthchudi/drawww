@@ -173,10 +173,15 @@ bool Engine::isDrawing() {
 // addPointAtMousePosition adds a point at the current mouse position
 void Engine::addPointAtMousePosition() {
     glm::vec2 mousePositionNDC = getMousePositionNDC(window);
+    glm::vec2 mousePositionFrameBuffer = getMousePositionFrameBuffer(window);
 
+    // Add the mouse position as a point in the engine nodes
     std::unique_ptr<Point> point(new Point(mousePositionNDC.x, mousePositionNDC.y));
-
     this->add(std::move(point));
+
+    // Set this point as the last point
+    this->lastPoint = glm::vec2{mousePositionFrameBuffer.x, mousePositionFrameBuffer.y};
+    this->hasLastPoint = true;
 }
 
 // registerCallbacks registers a set of window callbacks
