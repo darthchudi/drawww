@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en-us">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Drawww</title>
+    <link rel="stylesheet" href="./index.css"/>
+    <script src="index.js"></script>
+  </head>
+  <body>
+    <div class="app">
+      <div class="status-container">
+        <div class="spinner" id='spinner'></div>
+        <div class="emscripten" id="status">Downloading...</div>
+
+        <div class="emscripten">
+          <progress value="0" max="100" id="progress" hidden=1></progress>
+        </div>
+      </div>
+
+
+      <p class="draw-caption"> 🎨 draw with your mouse below! </p>
+
+      <div id="canvas-container">
+        <canvas id="canvas" oncontextmenu="event.preventDefault()" tabindex=-1></canvas>
+      </div>
+
+      <!-- The output row is only available in dev environments -->
+      <!-- TODO: use a build flag to dynamically exclude this in prod -->
+      <!--    <textarea id="output" rows="8"></textarea>-->
+    </div>
+
+    <script type='text/javascript' src="./index.js"></script>
+    <script async type="text/javascript" src="./drawww.js"></script>
+  </body>
+</html>
