@@ -177,6 +177,11 @@ void Engine::addPointAtMousePosition() {
     std::unique_ptr<Point> point(new Point(mousePositionNDC.x, mousePositionNDC.y));
 
     this->add(std::move(point));
+
+    // Set this point as the last point
+    glm::vec2 mousePositionFrameBuffer = getMousePositionFrameBuffer(window);
+    this->lastPoint = glm::vec2{mousePositionFrameBuffer.x, mousePositionFrameBuffer.y};
+    this->hasLastPoint = true;
 }
 
 // registerCallbacks registers a set of window callbacks
