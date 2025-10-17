@@ -55,8 +55,6 @@ glm::vec2 getMousePositionFrameBuffer(GLFWwindow *window) {
 
 // frameBufferPosToNDC converts a 2d position vector from frame buffer co-ordinates to NDC
 glm::vec2 frameBufferPosToNDC(glm::vec2 input) {
-  // Convert the coords from screen space to (NDC).
-  // We use the viewport for this, as it uses the framebuffer size
   int viewport[4]; // x, y, w, h
   glGetIntegerv(GL_VIEWPORT, viewport);
 
